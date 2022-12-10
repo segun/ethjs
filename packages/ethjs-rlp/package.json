@@ -1,0 +1,31 @@
+{
+  "name": "ethjs-rlp",
+  "version": "1.0.0",
+  "main": "dist/ethjs-rlp.cjs.js",
+  "module": "dist/ethjs-rlp.esm.js",
+  "author": "Akintayo A. Olusegun",
+  "license": "MIT",
+  "scripts": {
+    "dev": "ts-node ./src/index.ts",
+    "clean": "npx rimraf dist bin",
+    "test": "jest",
+    "build": "yarn clean && npx tsc --build --verbose",
+    "build:docs": "typedoc",
+    "test:watch": "jest --watch"
+  },
+  "dependencies": {
+    "@types/node": "^18.11.12",
+    "add": "^2.0.6",
+    "none": "^1.0.0",
+    "typedoc": "^0.23.21",
+    "typedoc-plugin-missing-exports": "^1.0.0",
+    "typescript": "^4.9.4",
+    "yarn": "^1.22.19"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.2.4",
+    "jest": "^29.3.1",
+    "ts-jest": "^29.0.3",
+    "ts-node": "^10.9.1"
+  }
+}
