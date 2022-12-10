@@ -1,0 +1,16 @@
+{
+  "name": "@ethjs/monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "npx tsc --build tsconfig.build.json --verbose",
+    "build:clean": "rimraf dist '**/*.tsbuildinfo' && yarn build",
+    "build:docs": "yarn workspaces foreach --parallel --interlaced --verbose run build:docs",
+    "build:watch": "yarn run build --watch",
+    "test": "yarn build && yarn workspaces foreach --parallel --verbose run test"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "packageManager": "yarn@3.3.0"
+}

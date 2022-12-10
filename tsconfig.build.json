@@ -1,0 +1,9 @@
+{
+  "references": [
+    {
+      "path": "./packages/ethjs-rlp/tsconfig.json"
+    },
+  ],
+  "files": [],
+  "include": []
+}
