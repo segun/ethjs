@@ -1,4 +1,4 @@
-export type EncodableType = string | number | bigint | Uint8Array | Array<EncodableType>;
+export type EncodableType = string | number | bigint | Uint8Array | Array<EncodableType> | null | undefined
 
 /**
  * appends 0x to a string
@@ -39,7 +39,7 @@ export const isHexPrefixed = (input: string) => {
  * @param input number to convert to hex
  * @returns hex string representation of number
  */
-export const numberToHex = (input: number) => {
+export const numberToHex = (input: number | bigint) => {
     const hex = input.toString(16);
     return isPadded(hex) ? hex : '0' + hex;
 }

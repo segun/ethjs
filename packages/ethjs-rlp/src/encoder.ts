@@ -8,7 +8,15 @@ import { appendHexPrefix, EncodableType, hexToBytes, numberToHex, removeHexPrefi
 const cutoffPoint = 55;
 const stringOffset = 128;
 
-const Encoder = {
+export const Encoder = {
+    _concat: (lenArray: Uint8Array, bytesArray: Uint8Array) => {
+        const responseBytesArray = new Uint8Array(lenArray.length + bytesArray.length);
+        [...lenArray, ...bytesArray].forEach((byte, i) => {
+            responseBytesArray[i] = byte;
+        });
+
+        return responseBytesArray;
+    },
     /**
      * Encodes the length of a string
      * @param len 
@@ -25,33 +33,39 @@ const Encoder = {
             return Uint8Array.from(hexToBytes(allBytes));
         }
     },
-    encodeBuffer: (input: Buffer) => { },
+    encodeNumber: (input: number | bigint) => {
+        if(input === 0) {
+            return Encoder.encodeString("");
+        }
+        const hexOfNumber = numberToHex(input);
+        const byteLength = hexOfNumber.length / 2;
+        const bytesArray = toBytes(appendHexPrefix(hexOfNumber));
+        const lenEncoded = Encoder.encodeLength(byteLength);
+        return Encoder._concat(lenEncoded, bytesArray);
+    },
     encodeString: (input: string): Uint8Array => {
         const bytesArray = toBytes(input);
         if (bytesArray.length === 1 && bytesArray[0] < stringOffset) {
             return bytesArray;
         } else {
-            const lenEncoded =  Encoder.encodeLength(bytesArray.length);
+            const lenEncoded = Encoder.encodeLength(bytesArray.length);
 
-            const responseBytesArray = new Uint8Array(lenEncoded.length + bytesArray.length);
-            [...lenEncoded, ...bytesArray].forEach((byte, i) => {
-                responseBytesArray[i] = byte;
-            });
-
-            return responseBytesArray;
+            return Encoder._concat(lenEncoded, bytesArray);
         }
     },
     encode: (input: EncodableType) => {
         const inputType = typeof input;
         if (inputType === 'string') {
             return Encoder.encodeString(input as string);
-        }
-        if (input instanceof Array) {
-            // return Encoder.encodeArray(input as Array<EncodableType>);
+        } else if (inputType === 'number' || inputType === 'bigint') {
+            return Encoder.encodeNumber(input as number);
+        } else if (input instanceof Uint8Array) {
+            return input;
+        } else if (input === null || input === undefined) {
+            // treat like an empty string
+            return Encoder.encodeString("");
         }
 
         return Uint8Array.from([]);
     },
 };
-
-export default Encoder;
