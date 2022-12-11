@@ -40,17 +40,29 @@ describe.only('Encoder', () => {
         const actual = Encoder.encode(input);
         expect(actual.slice(0, 3).join(',')).toBe(expectedFirst3Bytes.join(','));
     });
-    it('encode an integer', () => {
+    it('should encode an integer', () => {
         const input = 1024;
         // first byte is 128 + 2 = 130
         const expected = new Uint8Array([130, 4, 0]);
         const actual = Encoder.encode(input);
         expect(actual.join(',')).toBe(expected.join(','));
     });
-    it('encode 0', () => {
+    it('should encode 0', () => {
         const input = 0;
         const expected = new Uint8Array([128]);
         const actual = Encoder.encode(input);
         expect(actual.join(',')).toBe(expected.join(','));
-    });    
+    });
+    it('should encode undefined', () => {
+        const input = undefined;
+        const expected = new Uint8Array([128]);
+        const actual = Encoder.encode(input);
+        expect(actual.join(',')).toBe(expected.join(','));
+    });        
+    it('should encode null', () => {
+        const input = undefined;
+        const expected = new Uint8Array([128]);
+        const actual = Encoder.encode(input);
+        expect(actual.join(',')).toBe(expected.join(','));
+    });            
 });
