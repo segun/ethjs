@@ -79,33 +79,33 @@ describe('Testing Utilities Function', () => {
   it('should convert hex to bytes', () => {
     let input = '0x1234';
     let result = Utils.hexToBytes(input);
-    expect(result).toEqual(new Uint8Array([0x12, 0x34]));
+    expect(result).toEqual(Uint8Array.from([0x12, 0x34]));
 
     input = '0xb9f';
     result = Utils.hexToBytes(input);
-    expect(result).toEqual(new Uint8Array([11, 159]));    
+    expect(result).toEqual(Uint8Array.from([11, 159]));    
 
     input = '1234';
     result = Utils.hexToBytes(input);
-    expect(result).toEqual(new Uint8Array([0x12, 0x34]));    
+    expect(result).toEqual(Uint8Array.from([0x12, 0x34]));    
 
     input = '234';
     result = Utils.hexToBytes(input);
-    expect(result).toEqual(new Uint8Array([0x02, 0x34]));        
+    expect(result).toEqual(Uint8Array.from([0x02, 0x34]));        
   });
 
   it('should convert to bytes', () => {
     let input = 'hello world';
     let result = Utils.toBytes(input);
-    expect(result).toEqual(new Uint8Array([104,101,108,108,111,32,119,111,114,108,100]));
+    expect(result).toEqual(Uint8Array.from([104,101,108,108,111,32,119,111,114,108,100]));
 
     input = '0xb9f';
     result = Utils.toBytes(input);
-    expect(result).toEqual(new Uint8Array([11, 159]));    
+    expect(result).toEqual(Uint8Array.from([11, 159]));    
 
     let arrInput = [1,2,3];
     result = Utils.toBytes(arrInput);
-    expect(result).toEqual(new Uint8Array([]));    
+    expect(result).toEqual(Uint8Array.from([]));    
 
     input = '1234';
   });

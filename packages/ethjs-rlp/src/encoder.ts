@@ -7,6 +7,7 @@ import { appendHexPrefix, EncodableType, hexToBytes, numberToHex, removeHexPrefi
 
 const cutoffPoint = 55;
 const stringOffset = 128;
+const arrayOffset = 192;
 
 export const Encoder = {
     _concat: (lenArray: Uint8Array, bytesArray: Uint8Array) => {
@@ -22,13 +23,13 @@ export const Encoder = {
      * @param len 
      * @returns the length of a string encoded to bytesArray
      */
-    encodeLength: (len: number) => {
+    encodeLength: (len: number, offset: number) => {
         if (len <= cutoffPoint) {
-            return Uint8Array.from([stringOffset + len]);
+            return Uint8Array.from([offset + len]);
         } else {
             const hexOfLength = numberToHex(len);
             const bytesInHexOfLength = hexOfLength.length / 2;
-            const firstByte = numberToHex(stringOffset + cutoffPoint + bytesInHexOfLength);
+            const firstByte = numberToHex(offset + cutoffPoint + bytesInHexOfLength);
             const allBytes = firstByte + hexOfLength;
             return Uint8Array.from(hexToBytes(allBytes));
         }
@@ -39,8 +40,11 @@ export const Encoder = {
         }
         const hexOfNumber = numberToHex(input);
         const byteLength = hexOfNumber.length / 2;
+        if(byteLength === 1) {
+            return Encoder.encodeString(appendHexPrefix(hexOfNumber));
+        }
         const bytesArray = toBytes(appendHexPrefix(hexOfNumber));
-        const lenEncoded = Encoder.encodeLength(byteLength);
+        const lenEncoded = Encoder.encodeLength(byteLength, stringOffset);
         return Encoder._concat(lenEncoded, bytesArray);
     },
     encodeString: (input: string): Uint8Array => {
@@ -48,10 +52,32 @@ export const Encoder = {
         if (bytesArray.length === 1 && bytesArray[0] < stringOffset) {
             return bytesArray;
         } else {
-            const lenEncoded = Encoder.encodeLength(bytesArray.length);
+            const lenEncoded = Encoder.encodeLength(bytesArray.length, stringOffset);
 
             return Encoder._concat(lenEncoded, bytesArray);
         }
+    },
+    encodeArray: (input: Array<EncodableType>): Uint8Array => {
+        if(input.length === 0) {
+            return Uint8Array.from([0xc0]);
+        }
+        const encodedArray: Uint8Array[] = [];
+        let totalLen = 0;
+        input.forEach((item) => {
+            const enc = Encoder.encode(item);
+            encodedArray.push(enc);            
+            totalLen += enc.length;
+        });
+
+        const flattened = new Uint8Array(totalLen);
+        let offset = 0;
+        encodedArray.forEach((item) => {
+            flattened.set(item, offset);
+            offset += item.length;
+        });
+
+        const lenEncoded = Encoder.encodeLength(totalLen, arrayOffset);
+        return Encoder._concat(lenEncoded, flattened);
     },
     encode: (input: EncodableType) => {
         const inputType = typeof input;
@@ -62,10 +88,10 @@ export const Encoder = {
         } else if (input instanceof Uint8Array) {
             return input;
         } else if (input === null || input === undefined) {
-            // treat like an empty string
             return Encoder.encodeString("");
-        }
-
-        return Uint8Array.from([]);
+        } else {
+            // it's an array
+            return Encoder.encodeArray(input as Array<EncodableType>);
+        }       
     },
 };

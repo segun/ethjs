@@ -83,7 +83,7 @@ export const toBytes = (input: EncodableType): Uint8Array => {
         return new TextEncoder().encode(input);
     }
 
-    return new Uint8Array([]);
+    return Uint8Array.from([]);
 }
 
 export const humanReadable = (input: Uint8Array) => {
